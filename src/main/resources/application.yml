@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: local
+server:
+  port: 8084
+
+management:
+  contextPath: /admin
+
+logging.level.org.springframework: DEBUG
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    healthcheck:
+      enabled: true
+
+demo:
+  val: "Scala!"
+
+
+---
+spring:
+  profiles: local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: petstore
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+spring:
+  profiles: dev
+  data:
+    mongodb:
+      host: 10.202.128.102
+      port: 27017
+      username: root
+      password: root
+      database: petstore
+      authenticationDatabase: admin
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.202.128.102:8761/eureka/
