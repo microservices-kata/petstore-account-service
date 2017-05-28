@@ -16,10 +16,6 @@ class UserController @Autowired() (private val userRepository: UserRepository) {
   @Autowired
   var client: DiscoveryClient = _
 
-  @Value("${demo.env}")
-  @BeanProperty
-  var lang: String = _
-
   @ApiOperation(value = "Get user info")
   @RequestMapping(value = Array("/{userId}"), method = Array(RequestMethod.GET))
   @ResponseBody
@@ -29,7 +25,7 @@ class UserController @Autowired() (private val userRepository: UserRepository) {
 
   @ApiOperation(value = "Create new user")
   @RequestMapping(value = Array(""), method = Array(RequestMethod.POST))
-  def hello(@RequestBody user: User): User = {
+  def createUser(@RequestBody user: User) = {
     userRepository.save(user)
   }
 
