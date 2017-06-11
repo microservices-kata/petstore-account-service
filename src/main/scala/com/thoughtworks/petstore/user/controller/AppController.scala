@@ -12,10 +12,12 @@ class AppController {
 
   @Value("${app.lang}")
   var lang: String = _
+  @Value("${app.env}")
+  var env: String = _
 
-  @ApiOperation(value = "Show programing language")
-  @RequestMapping(value = Array("/lang"), method = Array(RequestMethod.GET))
+  @ApiOperation(value = "Show runtime information")
+  @RequestMapping(value = Array("/info"), method = Array(RequestMethod.GET))
   @ResponseBody
-  def getLanguage = ImmutableMap.of("language", lang)
+  def getInfo = ImmutableMap.of("language", lang, "environment", env)
 
 }

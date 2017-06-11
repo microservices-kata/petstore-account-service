@@ -1,6 +1,6 @@
-# petstore-user-service
+# petstore-account-service
 
-User management service
+Account management service
 
 |method|url|desc|
 |:---|:---|:---|
