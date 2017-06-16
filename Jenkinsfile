@@ -12,17 +12,23 @@ node {
     }
     docker.image("${mvnImage}").inside("-v ${mvnFolder}:/root/.m2") {
         stage('构建代码') {
-            sh 'mvn clean package'
+            sh "mvn clean compile"
         }
-    //    stage('验证契约') {
-    //        sh "export PACT_BROKER_URL=\"http://${devHost}:2000\"; mvn pact:verify"
-    //    }
+        stage('单元测试和打包') {
+            sh "mvn package"
+        }
+        stage('契约和集成测试') {
+            withEnv(["PACT_BROKER_URL=${devHost}", "PACT_BROKER_PORT=2000"]) {
+               sh "mvn verify"
+            }
+        }
     }
     stage('创建镜像') {
         sh "mv -f target/*.jar deployment/${srvName}.jar"
         sh "docker build -t ${registryUrl}/${srvName}:$BUILD_NUMBER deployment"
         sh "docker push ${registryUrl}/${srvName}:$BUILD_NUMBER"
         sh "docker rmi ${registryUrl}/${srvName}:$BUILD_NUMBER"
+        sh "rm -f deployment/${srvName}.jar"
     }
     stage('部署Dev环境') {
         def devDockerDaemon = "tcp://${devHost}:2376"

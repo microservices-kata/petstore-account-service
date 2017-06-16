@@ -1,0 +1,21 @@
+server:
+  port: 8083
+
+eureka:
+  client:
+    enabled: false
+
+spring:
+  data:
+    mongodb:
+      host: 10.202.129.46
+      port: 27017
+      username: root
+      password: root
+      database: petstore
+      authenticationDatabase: admin
+
+app:
+  lang: "Scala!"
+  env: "Test"
+

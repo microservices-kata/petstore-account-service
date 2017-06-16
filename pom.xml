@@ -5,13 +5,12 @@
     <parent>
         <groupId>com.thoughtworks</groupId>
         <artifactId>petstore</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>account-service</artifactId>
     <properties>
-        <swagger2.version>2.5.0</swagger2.version>
         <scala.version>2.11.8</scala.version>
         <scala.compatVersion>2.11</scala.compatVersion>
     </properties>
@@ -24,7 +23,7 @@
             <version>${scala.version}</version>
         </dependency>
 
-        <!-- eureka　客户端 -->
+        <!-- Eureka　客户端 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
@@ -37,25 +36,23 @@
             <version>1.10.3.RELEASE</version>
         </dependency>
 
-        <!-- Swagger2 -->
+        <!-- Pact -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger2.version}</version>
+            <groupId>au.com.dius</groupId>
+            <artifactId>pact-jvm-provider-junit_2.11</artifactId>
+            <version>3.4.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger2.version}</version>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>3.0.3</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
@@ -72,10 +69,6 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
