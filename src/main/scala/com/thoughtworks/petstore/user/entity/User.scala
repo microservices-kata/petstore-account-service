@@ -9,7 +9,7 @@ import scala.beans.BeanProperty
 object User {
   def apply(userId: Long, name: String, password: String, gender: String,
             email: String, phone: String): User = {
-    new User(new ObjectId, userId, name, gender, password, email, phone)
+    new User(new ObjectId, userId, name, password, gender, email, phone)
   }
 }
 
