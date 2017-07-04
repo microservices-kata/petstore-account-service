@@ -2,8 +2,8 @@ package com.thoughtworks.petstore.user.controller
 
 import com.thoughtworks.petstore.user.entity.User
 import com.thoughtworks.petstore.user.service.UserService
-import com.thoughtworks.petstore.user.dto.UserVo
-import com.thoughtworks.petstore.user.exception.UserExistsException
+import com.thoughtworks.petstore.user.dto.{ExceptionVo, UserVo}
+import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException}
 import io.swagger.annotations.{ApiOperation, ApiParam}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -48,8 +48,13 @@ class UserController {
 
   @ExceptionHandler(Array(classOf[UserExistsException]))
   @ResponseStatus(HttpStatus.CONFLICT)
-  def handleUserAlreadyExistException(e: UserExistsException): User = {
-    User(0, e.getMessage, null, null, null, null)
+  def handleUserAlreadyExistException(e: RuntimeException): ExceptionVo = {
+    ExceptionVo(409, e.getMessage)
   }
 
+  @ExceptionHandler(Array(classOf[UserNameTooLongException]))
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  def handleUserNameTooLongException(e: RuntimeException): ExceptionVo = {
+    ExceptionVo(400, e.getMessage)
+  }
 }

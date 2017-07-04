@@ -1,10 +1,8 @@
 package com.thoughtworks.petstore.user.repository
 
-import java.util.List
+import java.util
 
-import com.mongodb.WriteResult
 import com.thoughtworks.petstore.user.entity.User
-import com.thoughtworks.petstore.user.exception.UserExistsException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoOperations
@@ -20,25 +18,18 @@ class UserRepository {
   @Autowired
   var mongoOps: MongoOperations = _
 
-  def findUserById(userId: Long): User = mongoOps.findOne(query(where("userId").is(userId)), classOf[User])
+  def findUserById(userId: Long): User =
+    mongoOps.findOne(query(where("userId").is(userId)), classOf[User])
 
-  private def findAllUserByName(userName: String): List[User] = {
+  def findAllUserByName(userName: String): util.List[User] =
     mongoOps.find(query(where("name").is(userName)), classOf[User])
-  }
 
-  def findUserByName(userName: String): User =  mongoOps.findOne(query(where("name").is(userName)), classOf[User])
+  def findUserByName(userName: String): User =
+    mongoOps.findOne(query(where("name").is(userName)), classOf[User])
 
   def createUser(user: User): User = {
     val newUser = User(user.userId, user.name, user.password, user.gender, user.email, user.phone)
-    if (findAllUserByName(user.name).isEmpty) {
-      mongoOps.insert(newUser)
-    } else {
-      throw UserExistsException("User already exist")
-    }
-    if (findAllUserByName(user.name).size() > 1) {  // Double check user name is unique
-      removeUser(user)
-      throw UserExistsException("User creation conflicted")
-    }
+    mongoOps.insert(newUser)
     newUser
   }
 
