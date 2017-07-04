@@ -4,7 +4,7 @@ import com.thoughtworks.petstore.user.entity.User
 import com.thoughtworks.petstore.user.repository.{LastUserIdRepository, UserRepository}
 import com.thoughtworks.petstore.user.dto.UserVo
 import com.thoughtworks.petstore.user.dto.assembler.UserAssembler
-import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException}
+import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException, UserPasswordIncorrectException}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -45,9 +45,12 @@ class UserService {
 
   def findUserByName(userName: String): User = userRepository.findUserByName(userName)
 
-  def credentialMatch(name: String, pass: String): Boolean = {
+  def credentialMatch(name: String, pass: String): User = {
     val user = findUserByName(name)
-    user.getPassword == pass
+    if (user.getPassword != pass) {
+      throw UserPasswordIncorrectException("User name and password not match")
+    }
+    user
   }
 
 }

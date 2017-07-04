@@ -1,8 +1,8 @@
 package com.thoughtworks.petstore.user.controller
 
 import com.thoughtworks.petstore.user.dto.assembler.UserAssembler
-import com.thoughtworks.petstore.user.dto.{CredentialMatchVo, ExceptionVo, UserVo, UserWithIdVo}
-import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException}
+import com.thoughtworks.petstore.user.dto.{ExceptionVo, UserVo, UserWithIdVo}
+import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException, UserPasswordIncorrectException}
 import com.thoughtworks.petstore.user.service.UserService
 import io.swagger.annotations.{ApiOperation, ApiParam}
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,8 +22,8 @@ class UserController {
   @ResponseBody
   def matchUserCredential(@ApiParam(required = true, name = "name", value = "User Name") @RequestParam name: String,
                     @ApiParam(required = true, name = "pass", value = "User Password") @RequestParam pass: String)
-    : CredentialMatchVo = {
-    CredentialMatchVo(userService.credentialMatch(name, pass))
+    : UserWithIdVo = {
+    UserAssembler.userEntity2UserWithIdVo(userService.credentialMatch(name, pass))
   }
 
   @ApiOperation(value = "Get user info")
@@ -49,13 +49,13 @@ class UserController {
 
   @ExceptionHandler(Array(classOf[UserExistsException]))
   @ResponseStatus(HttpStatus.CONFLICT)
-  def handleUserAlreadyExistException(e: RuntimeException): ExceptionVo = {
-    ExceptionVo(409, e.getMessage)
-  }
+  def handleUserAlreadyExistException(e: RuntimeException): ExceptionVo = ExceptionVo(409, e.getMessage)
 
   @ExceptionHandler(Array(classOf[UserNameTooLongException]))
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  def handleUserNameTooLongException(e: RuntimeException): ExceptionVo = {
-    ExceptionVo(400, e.getMessage)
-  }
+  def handleUserNameTooLongException(e: RuntimeException): ExceptionVo = ExceptionVo(400, e.getMessage)
+
+  @ExceptionHandler(Array(classOf[UserPasswordIncorrectException]))
+  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+  def handleUserPasswordIncorrectException(e: RuntimeException): ExceptionVo = ExceptionVo(406, e.getMessage)
 }
