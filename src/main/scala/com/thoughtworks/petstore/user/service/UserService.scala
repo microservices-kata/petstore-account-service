@@ -3,6 +3,7 @@ package com.thoughtworks.petstore.user.service
 import com.thoughtworks.petstore.user.entity.User
 import com.thoughtworks.petstore.user.repository.{LastUserIdRepository, UserRepository}
 import com.thoughtworks.petstore.user.dto.UserVo
+import com.thoughtworks.petstore.user.dto.assembler.UserAssembler
 import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -24,7 +25,7 @@ class UserService {
     }
 
     val userId = lastUserIdRepository.getNextUserId()
-    val user = User(userId, userVo.getName, userVo.password, userVo.gender, userVo.getEmail, userVo.getPhone)
+    val user = UserAssembler.userVo2UserEntity(userId, userVo)
     userRepository.createUser(user)
     if (userRepository.findAllUserByName(userVo.name).size() > 1) {  // Double check user name is unique
       userRepository.removeUser(user)
@@ -33,15 +34,20 @@ class UserService {
     user
   }
 
-  def updateUser(userId: Long, user: UserVo): User = {
-    if (user.getName.length > 20) {
+  def updateUser(userId: Long, userVo: UserVo): User = {
+    if (userVo.getName.length > 20) {
       throw UserNameTooLongException("User name should not longer then 20 chars")
     }
-    userRepository.updateUser(User(userId, user.getName, user.password, user.gender,
-      user.getEmail, user.getPhone))
+    userRepository.updateUser(UserAssembler.userVo2UserEntity(userId, userVo))
   }
 
   def findUserById(userId: Long): User = userRepository.findUserById(userId)
 
   def findUserByName(userName: String): User = userRepository.findUserByName(userName)
+
+  def credentialMatch(name: String, pass: String): Boolean = {
+    val user = findUserByName(name)
+    user.getPassword == pass
+  }
+
 }

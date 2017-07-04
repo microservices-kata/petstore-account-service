@@ -1,9 +1,9 @@
 package com.thoughtworks.petstore.user.controller
 
-import com.thoughtworks.petstore.user.entity.User
-import com.thoughtworks.petstore.user.service.UserService
-import com.thoughtworks.petstore.user.dto.{ExceptionVo, UserVo}
+import com.thoughtworks.petstore.user.dto.assembler.UserAssembler
+import com.thoughtworks.petstore.user.dto.{CredentialMatchVo, ExceptionVo, UserVo, UserWithIdVo}
 import com.thoughtworks.petstore.user.exception.{UserExistsException, UserNameTooLongException}
+import com.thoughtworks.petstore.user.service.UserService
 import io.swagger.annotations.{ApiOperation, ApiParam}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -17,33 +17,34 @@ class UserController {
   @Autowired
   var userService: UserService = _
 
-  @ApiOperation(value = "Get user info via name")
-  @RequestMapping(value = Array("/"), method = Array(RequestMethod.GET))
+  @ApiOperation(value = "Check whether user's password match")
+  @RequestMapping(value = Array("/authentication"), method = Array(RequestMethod.GET))
   @ResponseBody
-  def getUserByName(@ApiParam(required = true, name = "name", value = "User Name") @RequestParam name: String)
-    : User = {
-    userService.findUserByName(name)
+  def matchUserCredential(@ApiParam(required = true, name = "name", value = "User Name") @RequestParam name: String,
+                    @ApiParam(required = true, name = "pass", value = "User Password") @RequestParam pass: String)
+    : CredentialMatchVo = {
+    CredentialMatchVo(userService.credentialMatch(name, pass))
   }
 
   @ApiOperation(value = "Get user info")
   @RequestMapping(value = Array("/{userId}"), method = Array(RequestMethod.GET))
   @ResponseBody
   def getUserById(@ApiParam(required = true, name = "userId", value = "User Id") @PathVariable userId: Long)
-    : User = {
-    userService.findUserById(userId)
+    : UserWithIdVo = {
+    UserAssembler.userEntity2UserWithIdVo(userService.findUserById(userId))
   }
 
   @ApiOperation(value = "Update user info")
   @RequestMapping(value = Array("/{userId}"), method = Array(RequestMethod.PUT))
   def updateUser(@ApiParam(required = true, name = "userId", value = "User Id") @PathVariable userId: Long,
-                 @RequestBody user: UserVo): User = {
-    userService.updateUser(userId, user)
+                 @RequestBody user: UserVo): UserWithIdVo = {
+    UserAssembler.userEntity2UserWithIdVo(userService.updateUser(userId, user))
   }
 
   @ApiOperation(value = "Create new user")
   @RequestMapping(value = Array(""), method = Array(RequestMethod.POST))
-  def createUser(@RequestBody user: UserVo): User = {
-    userService.createUser(user)
+  def createUser(@RequestBody user: UserVo): UserWithIdVo = {
+    UserAssembler.userEntity2UserWithIdVo(userService.createUser(user))
   }
 
   @ExceptionHandler(Array(classOf[UserExistsException]))
