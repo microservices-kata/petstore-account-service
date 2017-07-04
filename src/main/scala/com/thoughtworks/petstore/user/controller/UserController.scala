@@ -3,22 +3,32 @@ package com.thoughtworks.petstore.user.controller
 import com.thoughtworks.petstore.user.entity.User
 import com.thoughtworks.petstore.user.service.UserService
 import com.thoughtworks.petstore.user.dto.UserVo
+import com.thoughtworks.petstore.user.exception.UserExistsException
 import io.swagger.annotations.{ApiOperation, ApiParam}
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation._
 
 
 @RestController
-@RequestMapping (value = Array ("/api/users") )
+@RequestMapping (value = Array ("/api/users"))
 class UserController {
 
   @Autowired
   var userService: UserService = _
 
+  @ApiOperation(value = "Get user info via name")
+  @RequestMapping(value = Array("/"), method = Array(RequestMethod.GET))
+  @ResponseBody
+  def getUserByName(@ApiParam(required = true, name = "name", value = "User Name") @RequestParam name: String)
+    : User = {
+    userService.findUserByName(name)
+  }
+
   @ApiOperation(value = "Get user info")
   @RequestMapping(value = Array("/{userId}"), method = Array(RequestMethod.GET))
   @ResponseBody
-  def getUser(@ApiParam(required = true, name = "userId", value = "User Id") @PathVariable userId: Long)
+  def getUserById(@ApiParam(required = true, name = "userId", value = "User Id") @PathVariable userId: Long)
     : User = {
     userService.findUserById(userId)
   }
@@ -34,6 +44,12 @@ class UserController {
   @RequestMapping(value = Array(""), method = Array(RequestMethod.POST))
   def createUser(@RequestBody user: UserVo): User = {
     userService.createUser(user)
+  }
+
+  @ExceptionHandler(Array(classOf[UserExistsException]))
+  @ResponseStatus(HttpStatus.CONFLICT)
+  def handleUserAlreadyExistException(e: UserExistsException): User = {
+    User(0, e.getMessage, null, null, null, null)
   }
 
 }

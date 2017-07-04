@@ -26,4 +26,6 @@ class UserService {
   }
 
   def findUserById(userId: Long): User = userRepository.findUserById(userId)
+
+  def findUserByName(userName: String): User = userRepository.findUserByName(userName)
 }
