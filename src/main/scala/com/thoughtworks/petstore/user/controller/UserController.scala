@@ -8,6 +8,7 @@ import io.swagger.annotations.{ApiOperation, ApiParam}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation._
+import springfox.documentation.annotations.ApiIgnore
 
 
 @RestController
@@ -45,6 +46,14 @@ class UserController {
   @RequestMapping(value = Array(""), method = Array(RequestMethod.POST))
   def createUser(@RequestBody user: UserVo): UserWithIdVo = {
     UserAssembler.userEntity2UserWithIdVo(userService.createUser(user))
+  }
+
+  @ApiIgnore
+  @ApiOperation(value = "Remove all users, for test purpose only !!")
+  @RequestMapping(value = Array(""), method = Array(RequestMethod.DELETE))
+  @ResponseBody
+  def cleanUpDatabase(@RequestParam iKnowItsDangerous: Boolean): String = {
+    if (iKnowItsDangerous && userService.removeAllUser) "OK" else "ERROR"
   }
 
   @ExceptionHandler(Array(classOf[UserExistsException]))

@@ -28,4 +28,6 @@ class LastUserIdRepository {
     lastId
   }
 
+  def dropMe(): Unit = mongoOps.dropCollection("LastUserId")
+
 }

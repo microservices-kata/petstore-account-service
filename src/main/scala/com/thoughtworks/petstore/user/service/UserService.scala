@@ -53,4 +53,10 @@ class UserService {
     user
   }
 
+  def removeAllUser(): Boolean = {
+    userRepository.dropMe()
+    lastUserIdRepository.dropMe()
+    true
+  }
+
 }

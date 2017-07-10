@@ -41,4 +41,6 @@ class UserRepository {
   }
 
   def removeUser(user: User): Int = mongoOps.remove(query(where("userId").is(user.userId))).getN
+
+  def dropMe(): Unit = mongoOps.dropCollection("User")
 }
