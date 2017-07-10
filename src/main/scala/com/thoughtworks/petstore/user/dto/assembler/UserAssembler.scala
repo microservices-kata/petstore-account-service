@@ -10,7 +10,7 @@ object UserAssembler {
   }
 
   def userEntity2UserWithIdVo(user: User): UserWithIdVo = {
-    UserWithIdVo(user.getUserId, user.getName, user.getPassword, user.getGender, user.getEmail, user.getPhone)
+    UserWithIdVo(user.getUserId, user.getName, user.getGender, user.getEmail, user.getPhone)
   }
 
 }
