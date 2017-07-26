@@ -16,7 +16,7 @@ class UserRepository {
   private val LOG = LoggerFactory.getLogger(classOf[UserRepository])
 
   @Autowired
-  var mongoOps: MongoOperations = _
+  private var mongoOps: MongoOperations = _
 
   def findUserById(userId: Long): User =
     mongoOps.findOne(query(where("userId").is(userId)), classOf[User])

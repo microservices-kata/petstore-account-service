@@ -15,7 +15,7 @@ class LastUserIdRepository {
   private val LOG = LoggerFactory.getLogger(classOf[LastUserIdRepository])
 
   @Autowired
-  var mongoOps: MongoOperations = _
+  private var mongoOps: MongoOperations = _
 
   def getNextUserId(): Long = {
     val options = FindAndModifyOptions.options().returnNew(true)
