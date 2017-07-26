@@ -2,6 +2,7 @@ package com.thoughtworks.petstore.api
 
 import java.io.IOException
 
+import com.thoughtworks.petstore.config.ConfigServerWithFongoConfiguration
 import com.thoughtworks.petstore.user.Application
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
@@ -15,7 +16,8 @@ import org.springframework.test.context.junit4.SpringRunner
 
 
 @RunWith(classOf[SpringRunner])
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = Array(classOf[Application]))
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+  classes = Array(classOf[ConfigServerWithFongoConfiguration], classOf[Application]))
 class VerifyInfoApi {
 
   @LocalServerPort
