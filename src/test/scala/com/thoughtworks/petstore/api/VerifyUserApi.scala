@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.thoughtworks.petstore.config.ConfigServerWithFongoConfiguration
 import com.thoughtworks.petstore.user.Application
 import com.thoughtworks.petstore.user.dto.UserVo
+import com.thoughtworks.petstore.user.entity.User
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
@@ -54,7 +55,7 @@ class VerifyUserApi {
 
   @Test
   @throws[IOException]
-  def test_api_01_can_create_new_account(): Unit = {
+  def test_api_can_create_new_account(): Unit = {
     val newAccount = UserVo("fan", "1234", "Male", "flin@tw.com", "123456789")
     given.contentType(ContentType.JSON).body(newAccount)
       .when.post("/api/users")
@@ -68,7 +69,7 @@ class VerifyUserApi {
 
   @Test
   @throws[IOException]
-  def test_api_02_return_400_when_account_name_longer_then_20_chars(): Unit = {
+  def test_api_return_400_when_account_name_longer_then_20_chars(): Unit = {
     val newAccount = UserVo("fannnnnnnnnnnnnnnnnnnnnnnnnnn", "1234", "Male", "flin@tw.com", "123456789")
     given.contentType(ContentType.JSON).body(newAccount)
       .when.post("/api/users")
@@ -79,7 +80,11 @@ class VerifyUserApi {
 
   @Test
   @throws[IOException]
-  def test_api_03_authentication_pass_when_user_name_and_password_match(): Unit = {
+  def test_api_authentication_pass_when_user_name_and_password_match(): Unit = {
+    val userFongo = User(1, "fan", "1234", "Male", "flin@tw.com", "123456789")
+    mongoTemplate.createCollection("User")
+    mongoTemplate.insert(userFongo)
+
     given.when.get("/api/users/authentication?name=fan&pass=1234")
       .then.statusCode(200)
       .body("name", equalTo("fan"))
@@ -88,16 +93,33 @@ class VerifyUserApi {
 
   @Test
   @throws[IOException]
-  def test_api_04_authentication_fail_with_400_when_user_name_and_password_not_match(): Unit = {
-    given.when.get("/api/users/authentication?name=abc&pass=123")
-      .then.statusCode(401)
-      .body("code", equalTo(401))
-      .body("message", equalTo("fail"))
+  def test_api_authentication_fail_with_406_when_user_name_and_password_not_match(): Unit = {
+    val userFongo = User(1, "fan", "1234", "Male", "flin@tw.com", "123456789")
+    mongoTemplate.createCollection("User")
+    mongoTemplate.insert(userFongo)
+
+    given.when.get("/api/users/authentication?name=fan&pass=4321")
+      .then.statusCode(406)
+      .body("code", equalTo(406))
+      .body("message", containsString("not match"))
   }
 
   @Test
   @throws[IOException]
-  def test_api_05_can_get_account_info(): Unit = {
+  def test_api_fail_with_400_when_requested_user_name_not_exist(): Unit = {
+    given.when.get("/api/users/authentication?name=abc&pass=4321")
+      .then.statusCode(400)
+      .body("code", equalTo(400))
+      .body("message", containsString("not exist"))
+  }
+
+  @Test
+  @throws[IOException]
+  def test_api_can_get_account_info(): Unit = {
+    val userFongo = User(1, "fan", "1234", "Male", "flin@tw.com", "123456789")
+    mongoTemplate.createCollection("User")
+    mongoTemplate.insert(userFongo)
+
     given.when.get("/api/users/1")
       .then.statusCode(200)
       .body("name", equalTo("fan"))
