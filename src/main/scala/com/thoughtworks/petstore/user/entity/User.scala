@@ -22,4 +22,16 @@ case class User(@Id _id: ObjectId,
                 @BeanProperty email: String,
                 @BeanProperty phone: String) {
   def this() = this(null, 0, null, null, null, null, null)
+
+  override def equals(user: Any): Boolean = {
+    user match {
+      case u: User => userId.equals(u.userId) &&
+        name.equals(u.name) &&
+        password.equals(u.password) &&
+        gender.equals(u.gender) &&
+        email.equals(u.email) &&
+        phone.equals(u.phone)
+      case _ => false
+    }
+  }
 }

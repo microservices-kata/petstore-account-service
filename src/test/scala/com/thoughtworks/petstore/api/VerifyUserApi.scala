@@ -70,7 +70,7 @@ class VerifyUserApi {
   @Test
   @throws[IOException]
   def test_api_return_400_when_account_name_longer_then_20_chars(): Unit = {
-    val newAccount = UserVo("fannnnnnnnnnnnnnnnnnnnnnnnnnn", "1234", "Male", "flin@tw.com", "123456789")
+    val newAccount = UserVo("fan456789012345678901", "1234", "Male", "flin@tw.com", "123456789")
     given.contentType(ContentType.JSON).body(newAccount)
       .when.post("/api/users")
       .then.statusCode(400)
@@ -81,7 +81,7 @@ class VerifyUserApi {
   @Test
   @throws[IOException]
   def test_api_authentication_pass_when_user_name_and_password_match(): Unit = {
-    val userFongo = User(1, "fan", "1234", "Male", "flin@tw.com", "123456789")
+    val userFongo = User(1L, "fan", "1234", "Male", "flin@tw.com", "123456789")
     mongoTemplate.createCollection("User")
     mongoTemplate.insert(userFongo)
 
@@ -94,7 +94,7 @@ class VerifyUserApi {
   @Test
   @throws[IOException]
   def test_api_authentication_fail_with_406_when_user_name_and_password_not_match(): Unit = {
-    val userFongo = User(1, "fan", "1234", "Male", "flin@tw.com", "123456789")
+    val userFongo = User(1L, "fan", "1234", "Male", "flin@tw.com", "123456789")
     mongoTemplate.createCollection("User")
     mongoTemplate.insert(userFongo)
 
@@ -116,7 +116,7 @@ class VerifyUserApi {
   @Test
   @throws[IOException]
   def test_api_can_get_account_info(): Unit = {
-    val userFongo = User(1, "fan", "1234", "Male", "flin@tw.com", "123456789")
+    val userFongo = User(1L, "fan", "1234", "Male", "flin@tw.com", "123456789")
     mongoTemplate.createCollection("User")
     mongoTemplate.insert(userFongo)
 

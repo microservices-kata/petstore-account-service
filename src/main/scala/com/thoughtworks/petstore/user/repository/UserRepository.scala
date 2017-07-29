@@ -1,7 +1,6 @@
 package com.thoughtworks.petstore.user.repository
 
-import java.util
-
+import java.util.List
 import com.thoughtworks.petstore.user.entity.User
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +20,7 @@ class UserRepository {
   def findUserById(userId: Long): User =
     mongoOps.findOne(query(where("userId").is(userId)), classOf[User])
 
-  def findAllUserByName(userName: String): util.List[User] =
+  def findAllUserByName(userName: String): List[User] =
     mongoOps.find(query(where("name").is(userName)), classOf[User])
 
   def findUserByName(userName: String): User =
