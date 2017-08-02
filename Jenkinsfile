@@ -12,8 +12,7 @@ pipeline {
     stages {
         stage('代码更新') {
             steps {
-                checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']],
-                              userRemoteConfigs: [[url: gitRepo]]]
+                checkout scm
             }
         }
         stage('构建代码') {
