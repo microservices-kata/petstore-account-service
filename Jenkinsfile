@@ -1,5 +1,4 @@
 def srvName = 'account-service'
-def gitRepo = 'https://github.com/microservices-kata/petstore-account-service.git'
 def devUser = 'scaleworks'
 def devHost = '10.202.129.46'
 def registryUrl = '10.202.129.203:5000'
