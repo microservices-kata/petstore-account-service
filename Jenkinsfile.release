@@ -1,0 +1,79 @@
+def srvName = 'account-service'
+def gitRepo = 'https://github.com/microservices-kata/petstore-account-service.git'
+def relUser = 'scaleworks'
+def relHost = '10.202.129.47'
+def registryUrl = '10.202.129.203:5000'
+def mvnImage = 'maven:3.5.0-jdk-8-alpine'
+def mvnFolder = '/opt/m2'
+def relDockerDaemon = "tcp://${relHost}:2376"
+def releaseVersion = 'v1.0'
+
+pipeline {
+    agent any
+    stages {
+        stage('代码更新') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('构建代码') {
+            agent {
+                docker {
+                    reuseNode true
+                    image "${mvnImage}"
+                    args "-v ${mvnFolder}:/root/.m2"
+                }
+            }
+            steps {
+                sh "mvn clean compile"
+            }
+        }
+        stage('单元测试和打包') {
+            agent {
+                docker {
+                    reuseNode true
+                    image "${mvnImage}"
+                    args "-v ${mvnFolder}:/root/.m2"
+                }
+            }
+            steps {
+                sh "mvn package"
+            }
+        }
+        stage('契约和集成测试') {
+            agent {
+                docker {
+                    reuseNode true
+                    image "${mvnImage}"
+                    args "-v ${mvnFolder}:/root/.m2"
+                }
+            }
+            steps {
+                withEnv(["PACT_BROKER_URL=${relHost}", 
+                         "PACT_BROKER_PORT=2000"]) {
+                    sh "mvn verify"
+                }
+            }
+        }
+        stage('创建镜像') {
+            steps {
+                sh """
+                    mv -f target/*.jar deployment/${srvName}.jar
+                    docker build -t ${registryUrl}/${srvName}:${releaseVersion} -f deployment/Dockerfile.release deployment
+                    docker push ${registryUrl}/${srvName}:${releaseVersion}
+                    docker rmi ${registryUrl}/${srvName}:${releaseVersion}
+                    rm -f deployment/${srvName}.jar
+                """
+            }
+        }
+        stage('部署Dev环境') {
+            steps {
+                sh """
+                    docker -H ${relDockerDaemon} rm -f ${srvName} | true
+                    docker -H ${relDockerDaemon} run -d --name ${srvName} --net=host ${registryUrl}/${srvName}:${releaseVersion}
+                    docker -H ${relDockerDaemon} image prune --force --all --filter until=`date -d '5 day ago' '+%F'`
+                """
+            }
+        }
+    }
+}
